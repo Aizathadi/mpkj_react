@@ -13,7 +13,7 @@ class StreetLightStatus extends Model
 
     protected $fillable = [
         'asset_no',
-        'site_name', 
+        'site_name',
         'status',
         'led_status',
         'dimming',
@@ -27,6 +27,13 @@ class StreetLightStatus extends Model
         'alarm_status',
         'lux',
         'local_time',
+        'last_seen_at',   // ✅ included in fillable
+    ];
+
+    // ✅ Use casts so Carbon works automatically
+    protected $casts = [
+        'local_time'   => 'datetime',
+        'last_seen_at' => 'datetime',
     ];
 
     public function asset()
@@ -45,5 +52,24 @@ class StreetLightStatus extends Model
                 }
             }
         });
+    }
+
+    /**
+     * ✅ Accessor: force LED OFF if device is offline.
+     */
+    public function getLedStatusAttribute($value)
+    {
+        if (!$this->last_seen_at || $this->last_seen_at->lt(now()->subMinutes(15))) {
+            return 0; // Always OFF when offline
+        }
+        return $value;
+    }
+
+    /**
+     * ✅ Accessor: check if streetlight is online.
+     */
+    public function getIsOnlineAttribute(): bool
+    {
+        return $this->last_seen_at && $this->last_seen_at->gt(now()->subMinutes(15));
     }
 }

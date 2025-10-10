@@ -24,10 +24,22 @@
         <!-- Sidebar -->
         <aside class="w-64 bg-gray-900 text-gray-200 flex flex-col fixed h-full shadow-lg">
             
-            <!-- Logo / Title -->
-            <div class="p-6 flex items-center justify-center border-b border-gray-700">
-                <span class="text-2xl font-bold tracking-wide">MPKJ TEST</span>
-            </div>
+          <!-- Logo / Title with Two-Line Text -->
+<div class="p-6 flex flex-col items-center justify-center border-b border-gray-700">
+    <div class="bg-white rounded-xl shadow-md p-4 flex flex-col items-center">
+        <!-- Logo Image -->
+        <img src="{{ asset('images/MPKJ.png') }}" 
+             alt="MPKJ Logo" 
+             class="h-16 w-auto object-contain">
+
+        <!-- Two-line text -->
+        <div class="mt-2 text-gray-900 font-bold text-center text-sm leading-tight">
+            <div>MAJLIS PERBANDARAN</div>
+            <div>KAJANG</div>
+        </div>
+    </div>
+</div>
+
 
             <!-- Navigation -->
             <nav class="mt-6 flex-1 space-y-2">
@@ -39,7 +51,7 @@
                     🏠 <span class="ml-3">Dashboard</span>
                 </a>
 
-                <!-- Divider -->
+                <!-- MONITORING Section -->
                 <div class="px-6 mt-4 mb-2 text-xs uppercase tracking-wide text-gray-400">
                     Monitoring
                 </div>
@@ -71,13 +83,26 @@
                     </span>
                 </a>
 
-               <!-- Alarm Configuration -->
-                     <a href="{{ route('alarm.configuration') }}" 
-                      class="flex items-center px-6 py-3 rounded-md transition 
-                        hover:bg-gray-700 hover:text-white {{ request()->routeIs('alarm.configuration') ? 'bg-gray-800 text-white font-semibold' : '' }}">
-                      ⚙️ <span class="ml-3">Alarm Configuration</span>
-                    </a>
+                <!-- SETUP Section -->
+                <div class="px-6 mt-4 mb-2 text-xs uppercase tracking-wide text-gray-400">
+                    Setup
+                </div>
 
+                <!-- Alarm Configuration -->
+                <a href="{{ route('alarm.configuration') }}" 
+                   class="flex items-center px-6 py-3 rounded-md transition 
+                          hover:bg-gray-700 hover:text-white {{ request()->routeIs('alarm.configuration') ? 'bg-gray-800 text-white font-semibold' : '' }}">
+                    ⚙️ <span class="ml-3">Alarm Configuration</span>
+                </a>
+
+                <!-- Lighting Setup -->
+                  <a href="{{ route('lighting.setup.index') }}" 
+                   class="flex items-center px-6 py-3 rounded-md transition 
+                    hover:bg-gray-700 hover:text-white {{ request()->routeIs('lighting.setup.index') ? 'bg-gray-800 text-white font-semibold' : '' }}">
+                   💡 <span class="ml-3">Lighting Configuration</span>
+                     </a>
+
+            </nav>
 
             <!-- Footer -->
             <div class="p-4 border-t border-gray-700 text-sm text-gray-400">

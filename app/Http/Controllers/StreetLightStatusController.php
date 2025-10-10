@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\StreetLightStatus;
 use App\Models\AssetRegistration;
+use Carbon\Carbon;
 
 class StreetLightStatusController extends Controller
 {
@@ -33,7 +34,7 @@ class StreetLightStatusController extends Controller
         StreetLightStatus::create([
             'asset_id'     => $request->asset_id,
             'asset_no'     => $request->asset_no,
-            'site_name'    => $siteName,  // <-- Auto-fill site name
+            'site_name'    => $siteName,
             'status'       => $request->status,
             'led_status'   => $request->led_status,
             'dimming'      => $request->dimming,
@@ -47,6 +48,7 @@ class StreetLightStatusController extends Controller
             'alarm_status' => $request->alarm_status,
             'lux'          => $request->lux,
             'local_time'   => $request->local_time,
+            'last_seen_at' => Carbon::now(),   // ✅ Add this
         ]);
 
         return redirect()->back()->with('success', 'Streetlight status saved successfully!');
@@ -74,8 +76,42 @@ class StreetLightStatusController extends Controller
             'alarm_status' => $request->alarm_status,
             'lux'          => $request->lux,
             'local_time'   => $request->local_time,
+            'last_seen_at' => Carbon::now(),   // ✅ Add this
         ]);
 
         return redirect()->back()->with('success', 'Streetlight status updated successfully!');
+    }
+
+    /**
+     * ✅ API endpoint for dashboard markers
+     * Returns calculated Online/Offline (without overwriting DB)
+     */
+    public function getStatusData()
+    {
+        $lights = StreetLightStatus::all()->map(function ($light) {
+            $isOnline = $light->last_seen_at && $light->last_seen_at->gt(now()->subMinutes(15));
+
+            return [
+                'id'         => $light->id,
+                'asset_no'   => $light->asset_no,
+                'site_name'  => $light->site_name,
+                'status'     => $isOnline ? 'Online' : 'Offline',   // ✅ calculated here
+                'led_status' => $isOnline ? $light->led_status : 0, // ✅ force OFF if offline
+                'dimming'    => $light->dimming,
+                'volt'       => $light->volt,
+                'ampere'     => $light->ampere,
+                'frequency'  => $light->frequency,
+                'power'      => $light->power,
+                'energy'     => $light->energy,
+                'alarm_status' => $light->alarm_status,
+                'lux'        => $light->lux,
+                'longitude'  => $light->longitude,
+                'latitude'   => $light->latitude,
+                'local_time' => $light->local_time,
+                'last_seen_at' => $light->last_seen_at,
+            ];
+        });
+
+        return response()->json($lights);
     }
 }

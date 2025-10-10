@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class AlarmController extends Controller
 {
     /**
-     * Show alarms grouped by site.
+     * Show alarms grouped by site (from Alarm table).
      */
     public function index()
     {
@@ -17,11 +17,64 @@ class AlarmController extends Controller
     }
 
     /**
-     * Return alarms as JSON for AJAX.
+     * Return all alarms as JSON.
      */
     public function data()
     {
         $alarms = Alarm::orderBy('timestamp', 'desc')->get();
+        return response()->json($alarms);
+    }
+
+    /**
+     * Return active alarms for popup (per asset or per site).
+     */
+    public function popupData(Request $request)
+    {
+        $query = Alarm::where('alarm_status', '!=', 'Normal')
+            ->orderBy('timestamp', 'desc')
+            ->select(['id', 'asset_no', 'site_name', 'alarm_status', 'timestamp']);
+
+        if ($request->filled('site')) {
+            $query->where('site_name', $request->site);
+        }
+
+        if ($request->filled('asset_no')) {
+            $query->where('asset_no', $request->asset_no);
+        }
+
+        $alarms = $query->get()->map(function ($a) {
+            return [
+                'id'           => $a->id,
+                'asset_no'     => $a->asset_no,
+                'site_name'    => $a->site_name,
+                'alarm'        => $a->alarm_status, // ✅ use alarm_status
+                'alarm_status' => $a->alarm_status,
+                'timestamp'    => optional($a->timestamp)->toDateTimeString(),
+            ];
+        });
+
+        return response()->json($alarms->values());
+    }
+
+    /**
+     * Return all active alarms as a flat array for dashboard popups.
+     */
+    public function popupAll()
+    {
+        $alarms = Alarm::where('alarm_status', '!=', 'Normal')
+            ->orderBy('timestamp', 'desc')
+            ->get()
+            ->map(function ($a) {
+                return [
+                    'id'           => $a->id,
+                    'asset_no'     => $a->asset_no,
+                    'site_name'    => $a->site_name,
+                    'alarm'        => $a->alarm_status, // ✅ use alarm_status
+                    'alarm_status' => $a->alarm_status,
+                    'timestamp'    => optional($a->timestamp)->toDateTimeString(),
+                ];
+            });
+
         return response()->json($alarms);
     }
 
@@ -36,7 +89,7 @@ class AlarmController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Alarm cleared',
-                'count'   => $this->getActiveCount() // return updated count
+                'count'   => $this->getActiveCount()
             ]);
         }
         return response()->json(['success' => false, 'message' => 'Alarm not found'], 404);
@@ -61,7 +114,7 @@ class AlarmController extends Controller
     public function clear()
     {
         $count = Alarm::count();
-        Alarm::truncate(); // ⚡ deletes all rows quickly
+        Alarm::truncate();
         return response()->json([
             'success' => true,
             'message' => "Cleared all {$count} alarms",

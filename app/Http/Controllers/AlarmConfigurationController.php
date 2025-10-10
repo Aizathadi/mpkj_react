@@ -76,14 +76,14 @@ class AlarmConfigurationController extends Controller
                     "cmdData" => [
                         "alarms" => [
                             [
-                                "chnNo"   => 1,
-                                "alarmId" => 103, // Under Current
-                                "value"   => $validated['under_current'],
+                                 "chnNo"   => 1,
+                                 "alarmId" => 100, // Over Voltage
+                                 "value"   => $validated['over_voltage'],
                             ],
                             [
-                                "chnNo"   => 1,
-                                "alarmId" => 101, // Over Current
-                                "value"   => $validated['over_current'],
+                                 "chnNo"   => 1,
+                                 "alarmId" => 101, // Over Current
+                                 "value"   => $validated['over_current'],
                             ],
                             [
                                 "chnNo"   => 1,
@@ -91,9 +91,9 @@ class AlarmConfigurationController extends Controller
                                 "value"   => $validated['under_voltage'],
                             ],
                             [
-                                "chnNo"   => 1,
-                                "alarmId" => 100, // Over Voltage
-                                "value"   => $validated['over_voltage'],
+                                 "chnNo"   => 1,
+                                 "alarmId" => 103, // Under Current
+                                 "value"   => $validated['under_current'],
                             ],
                         ],
                     ],

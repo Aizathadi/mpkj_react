@@ -128,6 +128,7 @@ class MqttSubscribe extends Command
                     'alarm_status' => 'NORMAL',
                     'lux'          => $data['lSnsr']['lux'] ?? null,
                     'local_time'   => Carbon::now('Asia/Kuala_Lumpur'),
+                    'last_seen_at' => now(),
                 ];
 
                 if ($msgType === 'DevStatRpt') {
