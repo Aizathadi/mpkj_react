@@ -12,9 +12,8 @@
                     border border-gray-700 backdrop-blur-sm">
             Loading time...
         </div>
-
-       <!-- ========================= FUTURISTIC COMMAND CENTRE ========================= -->
-<div id="command-centre" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-50 w-[94%] md:w-[82%]">
+ <!-- ========================= FUTURISTIC COMMAND CENTRE ========================= -->
+  <div id="command-centre" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-50 w-[100%] md:w-[82%]">
     <div class="rounded-3xl overflow-hidden border border-blue-600/20 
                 bg-gradient-to-b from-[#0a1628]/80 to-[#060f1e]/70 
                 backdrop-blur-xl shadow-[0_25px_80px_rgba(2,6,23,0.85)] 
@@ -23,133 +22,914 @@
         <!-- Header Section -->
         <div class="flex items-center justify-between px-6 py-3 border-b border-blue-800/20 bg-[#0b172b]/60">
             <div class="flex items-center gap-3">
-                <div class="px-3 py-2 rounded-lg bg-gradient-to-br from-[#0d1b33]/70 to-[#0b1224]/60 
-                            border border-blue-500/20 shadow-[0_0_12px_rgba(30,144,255,0.4)]">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-400" fill="none"
-                         viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                              d="M9 12h6m2 0a8 8 0 11-8-8 8 8 0 018 8z" />
-                    </svg>
-                </div>
-                <div>
-                    <div class="text-sm font-bold text-blue-300 tracking-wide uppercase">MPKj Command Centre</div>
-                    <div class="text-xs text-gray-400">Real-time Streetlight Control Hub</div>
+                <!-- Icon / Logo -->
+                <div class="flex items-center gap-2">
+                    <!-- MPKJ Logo dengan white background -->
+                    <div class="bg-white p-1 rounded-full">
+                        <img src="{{ asset('images/MPKJ.png') }}" alt="MPKJ Logo" class="h-8 w-8 rounded-full">
+                    </div>
+
+                    <!-- Text -->
+                    <div>
+                        <div class="text-sm font-bold text-blue-300 tracking-wide">MPKj STREETLIGHT COMMAND CENTRE</div>
+                        <div class="text-xs text-gray-400">Real-time Streetlight Control Hub</div>
+                    </div>
                 </div>
             </div>
+
+            <!-- Toggle Button -->
             <button id="centre-toggle" class="text-gray-300 hover:text-blue-400 text-sm font-semibold 
-                                             px-3 py-2 rounded-lg hover:bg-blue-500/10 transition">Hide</button>
+                                             px-3 py-2 rounded-lg hover:bg-blue-500/10 transition">
+                <span id="toggle-text" class="text-green-400 font-bold animate-pulse">Show</span>
+            </button>
         </div>
 
-        <!-- Main Grid Content -->
-        <div id="centre-content" class="p-5 grid grid-cols-1 md:grid-cols-4 gap-5">
+        <!-- Main Grid Content ( hidden) -->
+        <div id="centre-content" class="hidden p-5 grid grid-cols-1 md:grid-cols-4 gap-5">
 
-            <!--  Site Selection Column -->
-<div class="bg-[#0b172b]/50 p-4 rounded-2xl border border-blue-700/20 shadow-inner">
-    <div class="text-xs text-gray-400 mb-2 font-semibold uppercase">Select Site</div>
-    <select id="select-site" class="w-full rounded-lg bg-[#071423]/60 border border-gray-700 
-                                   px-2 py-1.5 text-sm text-gray-200 focus:border-blue-500 focus:ring-0">
-        <option value="all">All Sites</option>
-        @foreach($assets->pluck('site_name')->unique() as $site)
-            <option value="{{ $site }}">{{ $site }}</option>
-        @endforeach
+ <!-- Site Selection -->
+ <div class="relative overflow-hidden 
+            bg-gradient-to-b from-[#1a1f2c]/90 to-[#0e121b]/80 
+            p-5 rounded-2xl border border-gray-600/30 
+            shadow-[inset_0_0_25px_rgba(0,150,255,0.12),0_0_25px_rgba(0,0,0,0.8)] 
+            backdrop-blur-md transition-all duration-500 ease-in-out">
+
+  <!-- subtle glow overlay -->
+  <div class="absolute inset-0 pointer-events-none 
+              bg-[radial-gradient(circle_at_40%_30%,rgba(0,150,255,0.08),transparent_70%)]"></div>
+
+  <div class="relative">
+    <!-- HEADER -->
+ <div class="text-xs text-blue-400 mb-3 font-bold uppercase tracking-wider flex items-center gap-2">
+  <div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
+  Site Selection
+ </div>
+
+    <!-- Select Site -->
+    <div class="text-xs text-gray-400 mb-2 font-semibold uppercase tracking-wide">Select Site</div>
+    <select id="select-site"
+        class="w-full rounded-lg bg-[#1f2737]/70 border border-gray-700 
+               px-2 py-1.5 text-sm text-gray-100 focus:border-blue-500 focus:ring-0">
+        <option value="">Loading sites...</option>
     </select>
 
-    <div class="mt-4 text-xs text-gray-400 uppercase font-semibold">Select Assets</div>
-    <div id="asset-list" class="max-h-36 overflow-auto mt-2 space-y-2 text-sm text-gray-200 pr-1">
-        @foreach($assets as $asset)
-            <div class="flex items-center gap-2 asset-item" data-site="{{ $asset->site_name }}">
-                <input type="checkbox" id="asset-{{ $asset->id }}" value="{{ $asset->id }}" class="accent-blue-400">
-                <label for="asset-{{ $asset->id }}" class="text-sm">
-                    {{ $asset->asset_no }}
-                    <span class="text-xs text-gray-400 ml-1">({{ $asset->site_name }})</span>
-                </label>
-            </div>
-        @endforeach
+    <!-- Select Assets -->
+    <div class="mt-4 text-xs text-gray-400 uppercase font-semibold tracking-wide">Select Assets</div>
+
+    <!-- Select All Checkbox -->
+    <div id="select-all-container" class="hidden mt-1 mb-2 flex items-center gap-2 text-sm text-blue-400">
+        <input id="select-all-assets" type="checkbox" class="accent-blue-500 focus:ring-0">
+        <label for="select-all-assets" class="cursor-pointer select-none hover:text-blue-300 transition">
+            Select All Assets
+        </label>
     </div>
+
+    <!-- Asset List -->
+    <div id="asset-list" 
+         class="h-48 overflow-y-auto mt-2 space-y-2 text-sm text-gray-200 pr-2 
+                scrollbar-thin scrollbar-thumb-blue-700/50 scrollbar-track-[#1a1f2c] 
+                rounded-lg border border-gray-700/40 bg-[#1f2737]/60 shadow-inner">
+        <div class="text-gray-500 text-xs italic">Select a site to view assets.</div>
+    </div>
+  </div>
+ </div>
+
+
+ <script>
+ document.addEventListener("DOMContentLoaded", function () {
+    const siteSelect = document.getElementById("select-site");
+    const assetList = document.getElementById("asset-list");
+    const selectAllContainer = document.getElementById("select-all-container");
+    const selectAllCheckbox = document.getElementById("select-all-assets");
+
+    // Load sites from Laravel API
+    fetch("/api/sites")
+        .then(response => response.json())
+        .then(data => {
+            siteSelect.innerHTML = `<option value="all">All Sites</option>`;
+            data.forEach(site => {
+                siteSelect.innerHTML += `<option value="${site.site_name}">${site.site_name}</option>`;
+            });
+        })
+        .catch(err => {
+            console.error("Error loading sites:", err);
+            siteSelect.innerHTML = `<option value="">Error loading sites</option>`;
+        });
+
+    // When a site is selected load its assets
+    siteSelect.addEventListener("change", function () {
+        const site = siteSelect.value;
+        assetList.innerHTML = "<div class='text-gray-400 text-xs'>Loading assets...</div>";
+        selectAllContainer.classList.add("hidden");
+
+        if (site === "" || site === "all") {
+            assetList.innerHTML = "<div class='text-gray-400 text-xs'>Select a site to view assets.</div>";
+            return;
+        }
+
+        fetch(`/api/assets/${site}`)
+            .then(response => response.json())
+            .then(data => {
+                assetList.innerHTML = "";
+                if (data.length === 0) {
+                    assetList.innerHTML = "<div class='text-gray-400 text-xs'>No assets found for this site.</div>";
+                    return;
+                }
+
+                // Show the Select All checkbox
+                selectAllContainer.classList.remove("hidden");
+
+                // Create asset checkboxes
+                data.forEach(asset => {
+                    assetList.innerHTML += `
+                        <label class="flex items-center space-x-2 bg-[#071423]/40 rounded-md px-2 py-1 
+                                       hover:bg-[#0d203a]/60 cursor-pointer transition">
+                            <input type="checkbox" value="${asset.asset_no}" 
+                                   class="asset-checkbox accent-blue-500 focus:ring-0">
+                            <span>${asset.asset_no}</span>
+                        </label>
+                    `;
+                });
+
+                // Reset Select All when loading new assets
+                selectAllCheckbox.checked = false;
+            })
+            .catch(err => {
+                console.error("Error loading assets:", err);
+                assetList.innerHTML = "<div class='text-red-400 text-xs'>Error loading assets.</div>";
+            });
+    });
+
+    // Handle "Select All" checkbox behavior
+    selectAllCheckbox.addEventListener("change", function () {
+        const assetCheckboxes = assetList.querySelectorAll(".asset-checkbox");
+        assetCheckboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+    });
+ });
+ </script>
+
+ <style>
+ #asset-list::-webkit-scrollbar {
+    width: 6px;
+ }
+ #asset-list::-webkit-scrollbar-track {
+    background: #071423;
+    border-radius: 10px;
+ }
+ #asset-list::-webkit-scrollbar-thumb {
+    background-color: #1e40af;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+ }
+ #asset-list::-webkit-scrollbar-thumb:hover {
+    background-color: #3b82f6;
+ }
+ /* Firefox */
+ #asset-list {
+    scrollbar-width: thin;
+    scrollbar-color: #1e40af #071423; 
+ }
+ </style>
+
+ <!-- ==================Control Section ========================-->
+ <div class="relative overflow-hidden 
+            bg-gradient-to-b from-[#1a1f2c]/90 to-[#0e121b]/80 
+            p-5 rounded-2xl border border-gray-600/30 
+            shadow-[inset_0_0_25px_rgba(0,150,255,0.12),0_0_25px_rgba(0,0,0,0.8)] 
+            backdrop-blur-md transition-all duration-500 ease-in-out">
+
+  <!-- subtle glow overlay -->
+  <div class="absolute inset-0 pointer-events-none 
+              bg-[radial-gradient(circle_at_40%_30%,rgba(0,150,255,0.08),transparent_70%)]"></div>
+
+  <div class="relative">
+    <!-- HEADER -->
+    <div class="text-xs text-blue-400 mb-3 font-bold uppercase tracking-wider flex items-center gap-2">
+      <div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
+      Command Control
+    </div>
+
+    <div class="space-y-4">
+      <!-- ON -->
+      <label class="flex items-center gap-3 
+                    bg-[#1f2737]/60 hover:bg-[#263043]/70 
+                    transition-all px-3 py-2 rounded-lg 
+                    border border-green-400/30 hover:border-green-400/50 
+                    shadow-[0_0_15px_rgba(0,255,100,0.08)] cursor-pointer">
+        <input id="toggle-selected-on" type="checkbox" class="accent-green-400 scale-110 cursor-pointer">
+        <span class="text-sm text-gray-200">
+          Turn Selected <span class="font-semibold text-green-400">ON</span>
+        </span>
+      </label>
+
+      <!-- OFF -->
+      <label class="flex items-center gap-3 
+                    bg-[#1f2737]/60 hover:bg-[#3a1f1f]/60 
+                    transition-all px-3 py-2 rounded-lg 
+                    border border-red-400/30 hover:border-red-400/50 
+                    shadow-[0_0_15px_rgba(255,0,100,0.08)] cursor-pointer">
+        <input id="toggle-selected-off" type="checkbox" class="accent-red-400 scale-110 cursor-pointer">
+        <span class="text-sm text-gray-200">
+          Turn Selected <span class="font-semibold text-red-400">OFF</span>
+        </span>
+      </label>
+
+   <!-- BRIGHTNESS CONTROL -->
+ <div class="pt-3">
+  <div class="text-xs text-blue-300 uppercase font-semibold mb-2 flex justify-between tracking-wide">
+    <span>Set Brightness</span>
+   <span id="selected-dim-label" 
+      class="text-blue-400 font-semibold drop-shadow-[0_0_6px_rgba(0,255,255,0.6)] text-lg md:text-xl">
+  100%
+  </span>
+ </div>
+
+  <!-- Slider Container -->
+  <div class="relative group">
+    <input id="selected-dim" type="range" min="0" max="100" value="0"
+  class="w-full h-3 rounded-full appearance-none cursor-pointer transition-all duration-300 outline-none
+         shadow-[inset_0_0_10px_rgba(0,255,255,0.3),0_0_10px_rgba(0,0,0,0.8)]">
+
+    <!-- 3D glowing overlay -->
+    <div class="absolute inset-0 rounded-full bg-gradient-to-b from-[#1e293b]/40 to-[#020617]/80 pointer-events-none
+                shadow-[inset_0_1px_4px_rgba(255,255,255,0.2),0_2px_6px_rgba(0,0,0,0.7)]"></div>
+  </div>
+ </div> 
+
+  <style>
+ /* === CUSTOM SLIDER STYLING === */
+ #selected-dim::-webkit-slider-thumb {
+  appearance: none;
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #38bdf8, #0ea5e9 60%, #082f49 100%);
+  border: 2px solid #67e8f9;
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.6),
+    0 0 18px rgba(56,189,248,0.9),
+    inset 0 2px 4px rgba(255,255,255,0.25);
+  transition: all 0.3s ease;
+ }
+ #selected-dim::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 3px 8px rgba(0,0,0,0.6),
+    0 0 28px rgba(56,189,248,1),
+    inset 0 3px 6px rgba(255,255,255,0.3);
+ }
+ #selected-dim::-moz-range-thumb {
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #38bdf8, #0ea5e9 60%, #082f49 100%);
+  border: 2px solid #67e8f9;
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.6),
+    0 0 18px rgba(56,189,248,0.9),
+    inset 0 2px 4px rgba(255,255,255,0.25);
+  transition: all 0.3s ease;
+ }
+ #selected-dim::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 3px 8px rgba(0,0,0,0.6),
+    0 0 28px rgba(56,189,248,1),
+    inset 0 3px 6px rgba(255,255,255,0.3);
+ }
+
+ /* === CUSTOM SLIDER STYLING === */
+ #selected-dim::-webkit-slider-thumb {
+  appearance: none;
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #38bdf8, #0ea5e9 60%, #082f49 100%);
+  border: 2px solid #67e8f9;
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.6),
+    0 0 18px rgba(56,189,248,0.9),
+    inset 0 2px 4px rgba(255,255,255,0.25);
+  transition: all 0.3s ease;
+ }
+ #selected-dim::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 3px 8px rgba(0,0,0,0.6),
+    0 0 28px rgba(56,189,248,1),
+    inset 0 3px 6px rgba(255,255,255,0.3);
+ }
+ #selected-dim::-moz-range-thumb {
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #38bdf8, #0ea5e9 60%, #082f49 100%);
+  border: 2px solid #67e8f9;
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.6),
+    0 0 18px rgba(56,189,248,0.9),
+    inset 0 2px 4px rgba(255,255,255,0.25);
+  transition: all 0.3s ease;
+ }
+ #selected-dim::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 3px 8px rgba(0,0,0,0.6),
+    0 0 28px rgba(56,189,248,1),
+    inset 0 3px 6px rgba(255,255,255,0.3);
+ }
+ </style>
+
+ <script>
+ const slider = document.getElementById("selected-dim");
+ const label = document.getElementById("selected-dim-label");
+ const toggleOn = document.getElementById("toggle-selected-on");
+ const toggleOff = document.getElementById("toggle-selected-off");
+ const clearBtn = document.getElementById("clear-btn");
+ const applyBtn = document.getElementById("apply-btn");
+
+ // === Update slider gradient fill ===
+ function updateSliderFill(forceValue = null) {
+  const value = forceValue !== null ? forceValue : slider.value;
+  const fill = `linear-gradient(90deg, #00bfff ${value}%, #1e293b ${value}%)`;
+  slider.style.background = fill;
+  label.textContent = value + "%";
+ }
+
+ // === ON/OFF logic ===
+ function handleToggle() {
+  if (this === toggleOn && toggleOn.checked) {
+    toggleOff.checked = false;
+    slider.value = 100;
+    updateSliderFill(100);
+  } else if (this === toggleOff && toggleOff.checked) {
+    toggleOn.checked = false;
+    slider.value = 0;
+    updateSliderFill(0);
+  }
+ }
+
+ // === Event Listeners ===
+ slider.addEventListener("input", () => updateSliderFill());
+ toggleOn.addEventListener("change", handleToggle);
+ toggleOff.addEventListener("change", handleToggle);
+
+  // === Clear Button (optional) ===
+  if (clearBtn) {
+  clearBtn.addEventListener("click", () => {
+    toggleOn.checked = false;
+    toggleOff.checked = false;
+    slider.value = 0;
+    requestAnimationFrame(() => updateSliderFill(0));
+   });
+ }
+
+ // === Apply Button ===
+ applyBtn.addEventListener("click", () => {
+  const brightness = slider.value;
+  alert(`Applied brightness: ${brightness}%`);
+ });
+
+ // === Initial ===
+ updateSliderFill(0);
+  </script>
+
+  <!-- BUTTONS -->
+      <div class="pt-3 flex justify-center">
+        <button onclick="applyToSelected()" 
+                class="flex-1 py-2 rounded-lg 
+                       bg-gradient-to-br from-blue-600/90 to-blue-800/80 
+                       text-white font-semibold tracking-wide uppercase text-sm 
+                       hover:shadow-[0_0_25px_rgba(59,130,246,0.6)] hover:scale-[1.04] 
+                       transition-all duration-300">
+          Apply
+        </button>
+        
+      </div>
+    </div>
+  </div>
+ </div>
+ <script>
+     document.addEventListener("DOMContentLoaded", function () {
+    const toggleOn = document.getElementById("toggle-selected-on");
+    const toggleOff = document.getElementById("toggle-selected-off");
+    const brightnessSlider = document.getElementById("selected-dim");
+    const brightnessLabel = document.getElementById("selected-dim-label");
+
+    // === Update brightness label live ===
+    brightnessSlider.addEventListener("input", function() {
+        brightnessLabel.textContent = brightnessSlider.value + "%";
+    });
+
+    // === Mutual exclusive ON/OFF ===
+    toggleOn.addEventListener("change", () => {
+        if (toggleOn.checked) {
+            toggleOff.checked = false;
+            brightnessSlider.value = 100;
+            brightnessLabel.textContent = "100%";
+        }
+    });
+
+    toggleOff.addEventListener("change", () => {
+        if (toggleOff.checked) {
+            toggleOn.checked = false;
+            brightnessSlider.value = 0;
+            brightnessLabel.textContent = "0%";
+        }
+    });
+
+    // === Custom popup ===
+    function showPopup(message) {
+        const popup = document.createElement("div");
+        popup.className = "fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-green-600/90 text-white px-6 py-3 rounded-xl shadow-lg border border-green-400 text-sm font-semibold z-[9999] transition-all duration-500 ease-in-out";
+        popup.textContent = message;
+        document.body.appendChild(popup);
+        setTimeout(() => {
+            popup.style.opacity = "0";
+            popup.style.transform = "translate(-50%, 40px)";
+            setTimeout(() => popup.remove(), 500);
+        }, 2500);
+    }
+
+    // === Clear button ===
+    window.clearSelected = function() {
+        toggleOn.checked = false;
+        toggleOff.checked = false;
+        brightnessSlider.value =100;
+        brightnessLabel.textContent ="100%";
+        document.querySelectorAll(".asset-checkbox").forEach(cb => cb.checked = false);
+    }
+
+    // === Apply button ===
+    window.applyToSelected = async function() {
+        const selectedAssets = Array.from(document.querySelectorAll(".asset-checkbox:checked"))
+                                   .map(cb => cb.value);
+
+        if (selectedAssets.length === 0) {
+            showPopup("⚠️ Please select at least one asset.");
+            return;
+        }
+
+        const isOn = toggleOn.checked;
+        const isOff = toggleOff.checked;
+        const brightness = parseInt(brightnessSlider.value);
+
+        if (!isOn && !isOff) {
+            showPopup("⚠️ Please select ON or OFF command.");
+            return;
+        }
+
+        const commandType = "toggle_led";
+        const onoffValue = isOn ? 1 : 0;
+
+        // === Loop send command ===
+        for (const asset of selectedAssets) {
+            try {
+                // ON/OFF
+                await fetch("/mqtt/publish", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        asset_no: asset,
+                        command: commandType,
+                        onoff: onoffValue
+                    })
+                });
+
+                // Brightness
+                await fetch("/mqtt/publish", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        asset_no: asset,
+                        command: "set_dimming",
+                        dimming: brightness
+                    })
+                });
+
+                await new Promise(res => setTimeout(res, 300)); // Delay sedikit
+            } catch (err) {
+                console.error(`Error sending for ${asset}:`, err);
+            }
+        }
+
+        // === Green popup confirmation ===
+        const mode = isOn ? "ON" : "OFF";
+        showPopup(`✅ Command sent to ${selectedAssets.length} assets (${mode} + Brightness ${brightness}%)`);
+    }
+ });
+ </script>
+<!-- ==================== SYSTEM OVERVIEW: ALARM + SCHEDULE ==================== -->
+<div class="relative overflow-hidden 
+            bg-gradient-to-b from-[#1a1f2c]/90 to-[#0e121b]/80 
+            p-5 rounded-2xl border border-gray-600/30 
+            shadow-[inset_0_0_25px_rgba(0,150,255,0.12),0_0,0,0.8)] 
+            backdrop-blur-md transition-all duration-500 ease-in-out">
+
+  <div class="absolute inset-0 pointer-events-none 
+              bg-[radial-gradient(circle_at_40%_30%,rgba(0,150,255,0.08),transparent_70%)]"></div>
+
+  <div class="relative">
+
+    <!-- HEADER -->
+    <div class="text-xs text-blue-400 mb-3 font-bold uppercase tracking-wider flex items-center gap-2">
+      <div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
+      System Overview
+    </div>
+
+    <!-- ================= ALARM LIST TABLE ================= -->
+    <div class="mb-6">
+      <div class="text-sm text-gray-400 font-semibold mb-2">Alarm List</div>
+      <div class="overflow-y-auto max-h-64 rounded-xl border border-gray-700/50 
+                  scrollbar-thin scrollbar-thumb-blue-700/40 scrollbar-track-[#0e121b]/60">
+        <table id="alarm-table" class="min-w-full text-xs text-gray-200">
+          <thead class="bg-[#0f172a] text-gray-400 uppercase sticky top-0 z-10">
+            <tr>
+              <th class="px-3 py-2 border-b border-gray-700 text-left">Site Name</th>
+              <th class="px-3 py-2 border-b border-gray-700 text-left">Asset No</th>
+              <th class="px-3 py-2 border-b border-gray-700 text-left">Alarm Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="3" class="text-gray-500 text-center py-3">Loading alarms...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ================= SCHEDULE LIST TABLE ================= -->
+    <div>
+      <div class="text-sm text-gray-400 font-semibold mb-2">Schedule (One Per Site)</div>
+
+      <div class="overflow-x-auto rounded-xl border border-gray-700/50 
+                  scrollbar-thin scrollbar-thumb-blue-700/40 scrollbar-track-[#0e121b]/60">
+        <table id="schedule-table" class="min-w-[1000px] text-xs text-gray-200">
+          <thead class="bg-[#0f172a] text-gray-400 uppercase sticky top-0 z-10">
+            <tr>
+              <th class="px-3 py-2 border-b border-gray-700">Site Name</th>
+              <th class="px-3 py-2 border-b border-gray-700">On Time</th>
+              <th class="px-3 py-2 border-b border-gray-700">Off Time</th>
+              <th class="px-3 py-2 border-b border-gray-700">Dim1 Start</th>
+              <th class="px-3 py-2 border-b border-gray-700">Dim1 Stop</th>
+              <th class="px-3 py-2 border-b border-gray-700">Dim1 Bright</th>
+              <th class="px-3 py-2 border-b border-gray-700">Dim2 Start</th>
+              <th class="px-3 py-2 border-b border-gray-700">Dim2 Stop</th>
+              <th class="px-3 py-2 border-b border-gray-700">Dim2 Bright</th>
+              <th class="px-3 py-2 border-b border-gray-700">Dim3 Start</th>
+              <th class="px-3 py-2 border-b border-gray-700">Dim3 Stop</th>
+              <th class="px-3 py-2 border-b border-gray-700">Dim3 Bright</th>
+              <th class="px-3 py-2 border-b border-gray-700">Dim4 Start</th>
+              <th class="px-3 py-2 border-b border-gray-700">Dim4 Stop</th>
+              <th class="px-3 py-2 border-b border-gray-700">Dim4 Bright</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="15" class="text-gray-500 text-center py-3">Loading schedules...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<!-- 💡 Site + Asset Filter Logic -->
+<!-- ==================== STYLE ==================== -->
+<style>
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #2563eb80, #38bdf880);
+  border-radius: 10px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #0f172a;
+  border-radius: 10px;
+}
+</style>
+
+<!-- ==================== SCRIPT ==================== -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const siteSelect = document.getElementById('select-site');
-    const assetItems = document.querySelectorAll('.asset-item');
+document.addEventListener("DOMContentLoaded", function() {
+    const alarmTableBody = document.querySelector("#alarm-table tbody");
+    const scheduleTableBody = document.querySelector("#schedule-table tbody");
+    const siteSelect = document.getElementById("select-site");
+    let currentSite = "all";
 
-    siteSelect.addEventListener('change', function() {
-        const selectedSite = this.value;
+    // === LOAD ALARMS ===
+    async function loadAlarms(site = "all") {
+        try {
+            let url = "/alarms/popupAll";
+            if (site && site !== "all" && site !== "") url = `/alarms/popupData?site=${encodeURIComponent(site)}`;
+            const res = await fetch(url);
+            const alarms = await res.json();
 
-        assetItems.forEach(item => {
-            // show all assets if 'all' is selected, otherwise filter by site
-            if (selectedSite === 'all') {
-                item.style.display = 'flex';
-            } else {
-                item.style.display = item.dataset.site === selectedSite ? 'flex' : 'none';
+            alarmTableBody.innerHTML = "";
+            if (!alarms.length) {
+                alarmTableBody.innerHTML = `<tr><td colspan="3" class="text-gray-500 text-center py-3">No alarms for ${site}</td></tr>`;
+                return;
             }
+
+            alarms.forEach(alarm => {
+    const status = (alarm.alarm_status || "").toLowerCase();
+    let colorClass = "text-gray-300";
+
+    // === ACTIVE / FAULT / ABNORMAL ALARMS (RED & BLINK) ===
+    if (
+        status.includes("active") ||
+        status.includes("overvoltage") ||
+        status.includes("undervoltage") ||
+        status.includes("overcurrent") ||
+        status.includes("undercurrent") ||
+        status.includes("lights on abnormal alarm") ||
+        status.includes("lights off abnormal alarm") ||
+        status.includes("fault") ||
+        status.includes("abnormal")
+    ) {
+        colorClass = "text-red-500 animate-pulse font-semibold";
+    }
+
+    // === CLEARED / NORMAL (GREEN) ===
+    else if (
+        status.includes("cleared") ||
+        status.includes("normal") ||
+        status.includes("ok")
+    ) {
+        colorClass = "text-green-400 font-semibold";
+    }
+
+    // === WARNING / STANDBY (YELLOW) ===
+    else if (
+        status.includes("warning") ||
+        status.includes("pending") ||
+        status.includes("standby")
+    ) {
+        colorClass = "text-yellow-400 font-semibold";
+    }
+
+    alarmTableBody.innerHTML += `
+        <tr class="hover:bg-[#1e293b]/60 transition duration-200">
+            <td class="px-3 py-1 border-b border-gray-700">${alarm.site_name || '-'}</td>
+            <td class="px-3 py-1 border-b border-gray-700">${alarm.asset_no || '-'}</td>
+            <td class="px-3 py-1 border-b border-gray-700 ${colorClass}">${alarm.alarm_status || '-'}</td>
+        </tr>`;
+});
+
+        } catch (err) {
+            console.error("Alarm load error:", err);
+            alarmTableBody.innerHTML = `<tr><td colspan="3" class="text-red-400 text-center py-3">Failed to load alarms</td></tr>`;
+        }
+    }
+
+    // === LOAD ONE SCHEDULE PER SITE ===
+    async function loadSchedules(site = "all") {
+        try {
+            let url = `/api/scheduleBySite?site=${encodeURIComponent(site)}`;
+            const res = await fetch(url);
+            const schedules = await res.json();
+
+            scheduleTableBody.innerHTML = "";
+            if (!schedules.length) {
+                scheduleTableBody.innerHTML = `<tr><td colspan="15" class="text-gray-500 text-center py-3">No schedules for ${site}</td></tr>`;
+                return;
+            }
+
+            schedules.forEach(s => {
+                scheduleTableBody.innerHTML += `
+                <tr class="hover:bg-[#1e293b]/60 transition duration-200">
+                    <td class="px-3 py-1 border-b border-gray-700">${s.site_name || '-'}</td>
+                    <td class="px-3 py-1 border-b border-gray-700">${s.on_time}</td>
+                    <td class="px-3 py-1 border-b border-gray-700">${s.off_time}</td>
+                    <td class="px-3 py-1 border-b border-gray-700">${s.dim1_start}</td>
+                    <td class="px-3 py-1 border-b border-gray-700">${s.dim1_stop}</td>
+                    <td class="px-3 py-1 border-b border-gray-700 text-yellow-300 font-semibold">${s.dim1_brightness}</td>
+                    <td class="px-3 py-1 border-b border-gray-700">${s.dim2_start}</td>
+                    <td class="px-3 py-1 border-b border-gray-700">${s.dim2_stop}</td>
+                    <td class="px-3 py-1 border-b border-gray-700 text-yellow-300 font-semibold">${s.dim2_brightness}</td>
+                    <td class="px-3 py-1 border-b border-gray-700">${s.dim3_start}</td>
+                    <td class="px-3 py-1 border-b border-gray-700">${s.dim3_stop}</td>
+                    <td class="px-3 py-1 border-b border-gray-700 text-yellow-300 font-semibold">${s.dim3_brightness}</td>
+                    <td class="px-3 py-1 border-b border-gray-700">${s.dim4_start}</td>
+                    <td class="px-3 py-1 border-b border-gray-700">${s.dim4_stop}</td>
+                    <td class="px-3 py-1 border-b border-gray-700 text-yellow-300 font-semibold">${s.dim4_brightness}</td>
+                </tr>`;
+            });
+        } catch (err) {
+            console.error("Schedule load error:", err);
+            scheduleTableBody.innerHTML = `<tr><td colspan="15" class="text-red-400 text-center py-3">Failed to load schedules</td></tr>`;
+        }
+    }
+
+    // === SITE CHANGE HANDLER ===
+    if (siteSelect) {
+        siteSelect.addEventListener("change", function() {
+            currentSite = siteSelect.value;
+            loadAlarms(currentSite);
+            loadSchedules(currentSite);
         });
-    });
+    }
+
+    // === AUTO REFRESH ===
+    loadAlarms(currentSite);
+    loadSchedules(currentSite);
+    setInterval(() => {
+        loadAlarms(currentSite);
+        loadSchedules(currentSite);
+    }, 30000);
 });
 </script>
 
-            <!-- Control Section -->
-            <div class="bg-[#0b172b]/50 p-4 rounded-2xl border border-pink-700/20 shadow-inner">
-                <div class="text-xs text-gray-400 mb-2 font-semibold uppercase">Per-Asset Control</div>
-                <div class="space-y-3">
-                    <label class="flex items-center gap-2">
-                        <input id="toggle-selected-on" type="checkbox" class="accent-green-400">
-                        <span class="text-sm text-gray-200">Turn Selected <span class="font-semibold text-green-400">ON</span></span>
-                    </label>
-                    <label class="flex items-center gap-2">
-                        <input id="toggle-selected-off" type="checkbox" class="accent-red-400">
-                        <span class="text-sm text-gray-200">Turn Selected <span class="font-semibold text-red-400">OFF</span></span>
-                    </label>
+ <!-- ==================== SYSTEM OVERVIEW: TOTALS ASSET ==================== -->
+<!-- ==================== SYSTEM OVERVIEW: TOTALS ASSET (WITH PIE CHART) ==================== -->
+<div class="relative overflow-hidden 
+            bg-gradient-to-b from-[#1a1f2c]/90 to-[#0e121b]/80 
+            p-6 rounded-3xl border border-blue-500/30 
+            shadow-[0_0_25px_rgba(0,200,255,0.1),inset_0_0_25px_rgba(0,150,255,0.15)] 
+            backdrop-blur-md transition-all duration-500 ease-in-out">
 
-                    <div>
-                        <label class="text-xs text-gray-400 uppercase font-semibold">Set Brightness</label>
-                        <input id="selected-dim" type="range" min="0" max="100" value="60" class="w-full accent-blue-400 mt-1">
-                        <div class="text-right text-xs text-gray-300 mt-1">Brightness: 
-                            <span id="selected-dim-label" class="text-blue-400 font-semibold">60%</span>
-                        </div>
-                    </div>
+  <!-- Glow overlay -->
+  <div class="absolute inset-0 pointer-events-none 
+              bg-[radial-gradient(circle_at_50%_20%,rgba(0,180,255,0.1),transparent_70%)]"></div>
 
-                    <div class="flex gap-2 pt-2">
-                        <button onclick="applyToSelected()" class="flex-1 py-2 rounded-lg 
-                                 bg-gradient-to-br from-blue-600/80 to-blue-700/80 
-                                 text-white font-semibold hover:shadow-[0_0_15px_rgba(59,130,246,0.5)] transition">
-                            Apply
-                        </button>
-                        <button onclick="clearSelected()" class="py-2 px-3 rounded-lg border border-gray-700/40 
-                                 text-gray-300 hover:text-white hover:bg-gray-700/20 transition">
-                            Clear
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Overview Chart -->
-            <div class="bg-[#0b172b]/50 p-4 rounded-2xl border border-blue-700/20 shadow-inner">
-                <div class="text-xs text-gray-400 mb-2 font-semibold uppercase">System Overview</div>
-                <canvas id="overview-doughnut" class="w-full h-36"></canvas>
-                <div class="mt-2 text-sm text-gray-300 flex justify-between font-semibold">
-                    <div>LED On: <span id="led-on-count" class="text-green-400">0</span></div>
-                    <div>LED Off: <span id="led-off-count" class="text-red-400">0</span></div>
-                </div>
-            </div>
-
-            <!-- Status Totals -->
-            <div class="bg-[#0b172b]/50 p-4 rounded-2xl border border-emerald-700/20 shadow-inner">
-                <div class="text-xs text-gray-400 mb-2 font-semibold uppercase">Totals</div>
-                <div class="space-y-3 text-sm">
-                    <div class="flex justify-between text-gray-300"><span>Total LED</span><span id="total-led" class="font-bold text-white">0</span></div>
-                    <div class="flex justify-between text-gray-300"><span>Online</span><span id="total-online" class="font-bold text-green-400">0</span></div>
-                    <div class="flex justify-between text-gray-300"><span>Offline</span><span id="total-offline" class="font-bold text-red-400">0</span></div>
-                </div>
-                <div class="mt-4 text-xs text-gray-400">Last Update: <span id="last-update" class="text-gray-300 font-semibold">—</span></div>
-            </div>
-        </div>
+  <div class="relative z-10">
+    <!-- HEADER -->
+    <div class="text-xs text-blue-400 mb-4 font-bold uppercase tracking-wider flex items-center gap-2">
+      <div class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
+      Totals LED Status
     </div>
+
+    <!-- CHARTS + TOTALS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
+      <!-- 🟢 LED STATUS PIE -->
+      <div class="flex flex-col items-center">
+        <canvas id="ledChart" width="150" height="150"></canvas>
+        <div class="mt-2 text-sm text-gray-300">LED ON / OFF</div>
+      </div>
+
+      <!-- 🔵 ONLINE/OFFLINE PIE -->
+      <div class="flex flex-col items-center">
+        <canvas id="onlineChart" width="150" height="150"></canvas>
+        <div class="mt-2 text-sm text-gray-300">Online / Offline</div>
+      </div>
+    </div>
+
+    <!-- TOTALS TEXT -->
+    <div class="mt-6 text-sm space-y-2 text-gray-300">
+      <div class="flex justify-between">
+        <span>Total LED Light</span>
+        <span id="total-led" class="font-bold text-white">0</span>
+      </div>
+      <div class="flex justify-between">
+        <span>Online</span>
+        <span id="total-online" class="font-bold text-green-400">0</span>
+      </div>
+      <div class="flex justify-between">
+        <span>Offline</span>
+        <span id="total-offline" class="font-bold text-red-400">0</span>
+      </div>
+      <div class="flex justify-between">
+        <span>LED ON</span>
+        <span id="total-led-on" class="font-bold text-green-400">0</span>
+      </div>
+      <div class="flex justify-between">
+        <span>LED OFF</span>
+        <span id="total-led-off" class="font-bold text-red-400">0</span>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- ==================== SCRIPT ==================== -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const siteSelect = document.getElementById("select-site");
+  let currentSite = "all";
+
+  const totalLED     = document.getElementById("total-led");
+  const totalOnline  = document.getElementById("total-online");
+  const totalOffline = document.getElementById("total-offline");
+  const totalLEDOn   = document.getElementById("total-led-on");
+  const totalLEDOff  = document.getElementById("total-led-off");
+
+  // ==== Create charts ====
+  const ledCtx = document.getElementById("ledChart").getContext("2d");
+  const onlineCtx = document.getElementById("onlineChart").getContext("2d");
+
+  const ledChart = new Chart(ledCtx, {
+    type: "doughnut",
+    data: {
+      labels: ["ON", "OFF"],
+      datasets: [{
+        data: [0, 0],
+        backgroundColor: ["#22c55e", "#ef4444"],
+        borderWidth: 0,
+      }],
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      cutout: "70%",
+    },
+  });
+
+  const onlineChart = new Chart(onlineCtx, {
+    type: "doughnut",
+    data: {
+      labels: ["Online", "Offline"],
+      datasets: [{
+        data: [0, 0],
+        backgroundColor: ["#3b82f6", "#f87171"],
+        borderWidth: 0,
+      }],
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      cutout: "70%",
+    },
+  });
+
+  async function loadTotals(site = "all") {
+    try {
+      const res = await fetch("/statusData");
+      const data = await res.json();
+
+      let filtered = data;
+      if (site && site !== "all" && site !== "") {
+        filtered = data.filter(item => (item.site_name || "").toLowerCase() === site.toLowerCase());
+      }
+
+      // === Count Totals ===
+      const totalCount   = filtered.length;
+      const onlineCount  = filtered.filter(l => l.status === "Online").length;
+      const offlineCount = totalCount - onlineCount;
+      const ledOnCount   = filtered.filter(l => Number(l.led_status) === 1).length;
+      const ledOffCount  = totalCount - ledOnCount;
+
+      // === Update Charts ===
+      ledChart.data.datasets[0].data = [ledOnCount, ledOffCount];
+      ledChart.update();
+
+      onlineChart.data.datasets[0].data = [onlineCount, offlineCount];
+      onlineChart.update();
+
+      // === Update Totals ===
+      totalLED.textContent     = totalCount;
+      totalOnline.textContent  = onlineCount;
+      totalOffline.textContent = offlineCount;
+      totalLEDOn.textContent   = ledOnCount;
+      totalLEDOff.textContent  = ledOffCount;
+
+    } catch (err) {
+      console.error("Failed to load totals:", err);
+    }
+  }
+
+  // === Site selection listener ===
+  if (siteSelect) {
+    siteSelect.addEventListener("change", function () {
+      currentSite = siteSelect.value;
+      loadTotals(currentSite);
+    });
+  }
+
+  // === Auto refresh ===
+  loadTotals(currentSite);
+  setInterval(() => loadTotals(currentSite), 30000);
+});
+</script>
+
+
+
+<script>
+    const centreToggle = document.getElementById('centre-toggle');
+    const centreContent = document.getElementById('centre-content');
+    const toggleText = document.getElementById('toggle-text');
+
+    // Start page hidden => toggleText = 'Show'
+    toggleText.innerText = 'Show';
+
+    centreToggle.addEventListener('click', () => {
+        if (centreContent.classList.contains('hidden')) {
+            centreContent.classList.remove('hidden');
+            toggleText.innerText = 'Hide';
+        } else {
+            centreContent.classList.add('hidden');
+            toggleText.innerText = 'Show';
+        }
+    });
+</script>
+
 <!-- =========================================================================== -->
-
-
         @push('scripts')
         <!-- Leaflet -->
         <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -178,8 +958,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .alarm-item { color: #ff5555; font-weight: bold; font-size: 13px; margin-bottom: 4px; }
         button { transition: all 0.2s ease; cursor: pointer; }
         button:hover { transform: scale(1.05); filter: brightness(1.1); }
-        /* small highlight for site scroll target */
-        .site-highlight { box-shadow: 0 0 0 3px rgba(59,130,246,0.12) inset; border-radius: 6px; transition: box-shadow 0.4s ease; }
         </style>
 
         <script>
@@ -231,102 +1009,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 `LED ON with ${dimming}% dimming sent for ${assetNo}`, 'Failed to send LED ON + dimming');
         };
 
-        // ------------------- SITE + ASSET UI LOGIC -------------------
-        // We'll populate the Select Site dropdown (unique site names)
-        // and the Asset List (grouped by site) based on the JSON returned by streetlight.status.data.
-        // Selecting a site in the dropdown will scroll to & briefly highlight that site's section in the asset list.
-        function sanitizeId(s){ return String(s).replace(/[^a-z0-9_-]/gi,'_'); }
-
-        function buildSiteAndAssetUI(data) {
-            // data expected: array of items with at least asset_no, site_name (or site), led_status etc.
-            const siteSelect = document.getElementById('select-site');
-            const assetList = document.getElementById('asset-list');
-
-            // build map: siteName => [items]
-            const groups = {};
-            data.forEach(item => {
-                const siteName = item.site_name || item.site || 'Unknown Site';
-                if(!groups[siteName]) groups[siteName] = [];
-                groups[siteName].push(item);
-            });
-
-            // populate select with unique site names (preserve "All Sites" as first)
-            // clear existing dynamic options first (but keep the "All Sites" option)
-            Array.from(siteSelect.querySelectorAll('option')).forEach(opt => {
-                if(opt.value !== 'all') opt.remove();
-            });
-
-            Object.keys(groups).forEach(siteName => {
-                const opt = document.createElement('option');
-                opt.value = siteName;
-                opt.textContent = siteName;
-                siteSelect.appendChild(opt);
-            });
-
-            // populate asset list grouped by site (no redundant site names)
-            assetList.innerHTML = ''; // clear
-            if(Object.keys(groups).length === 0) {
-                assetList.innerHTML = `<div class="text-gray-500 text-xs italic">No assets found</div>`;
-                return;
-            }
-
-            Object.keys(groups).forEach(siteName => {
-                const siteId = 'site-' + sanitizeId(siteName);
-                // Site header
-                const siteHeader = document.createElement('div');
-                siteHeader.id = siteId;
-                siteHeader.className = "pt-2 pb-1";
-                siteHeader.innerHTML = `<div class="text-xs text-blue-300 font-semibold mb-2">${siteName}</div>`;
-                assetList.appendChild(siteHeader);
-
-                // Assets under site
-                groups[siteName].forEach(item => {
-                    const row = document.createElement('div');
-                    row.className = "flex items-center gap-2 ml-2";
-                    // status label color
-                    const status = (item.led_status ?? item.status ?? '').toString().toLowerCase();
-                    const statusClass = ["1","on","true"].includes(status) ? 'text-green-400' : 'text-red-400';
-                    const labelText = item.asset_no ?? item.id ?? (`asset_${Math.random().toString(36).slice(2,7)}`);
-
-                    row.innerHTML = `
-                        <input type="checkbox" id="chk-${labelText}" value="${labelText}" class="accent-blue-400">
-                        <label for="chk-${labelText}" class="text-sm">${labelText}
-                            <span class="text-xs ${statusClass} ml-2">[${status ? status.toUpperCase() : 'N/A'}]</span>
-                        </label>
-                    `;
-                    assetList.appendChild(row);
-                });
-            });
-        }
-
-        // When user picks a site, scroll to that group's header and highlight briefly
-        function setupSiteSelectScroll() {
-            const siteSelect = document.getElementById('select-site');
-            const assetList = document.getElementById('asset-list');
-            siteSelect.addEventListener('change', (e) => {
-                const val = e.target.value;
-                if(val === 'all') {
-                    // scroll to top of asset list
-                    assetList.scrollTo({ top: 0, behavior: 'smooth' });
-                    return;
-                }
-                const targetId = 'site-' + sanitizeId(val);
-                const targetEl = document.getElementById(targetId);
-                if(targetEl) {
-                    // scroll the container so target is visible
-                    const containerTop = assetList.getBoundingClientRect().top;
-                    const targetTop = targetEl.getBoundingClientRect().top;
-                    const offset = targetTop - containerTop;
-                    assetList.scrollTo({ top: offset + assetList.scrollTop - 8, behavior: 'smooth' });
-
-                    // briefly highlight
-                    targetEl.classList.add('site-highlight');
-                    setTimeout(()=> targetEl.classList.remove('site-highlight'), 900);
-                }
-            });
-        }
-
-        // ------------------- Existing map & data loading logic below -------------------
         document.addEventListener("DOMContentLoaded", async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const selectedAssetNo = urlParams.get('asset_no');
@@ -375,19 +1057,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 return alarms.map(a=>`<li class="alarm-item">${a.alarm}</li>`).join('');
             }
 
-            // MAIN data loader — also updates Site/Asset UI
             async function loadStreetLightStatus(callbackAfterLoad = null){
                 await fetchAllAlarms();
                 try{
                     const res = await fetch("{{ route('streetlight.status.data') }}",{ credentials:"same-origin" });
                     const data = await res.json();
-                    // store for UI functions if needed
-                    window.__streetlight_data = data;
-
-                    // Populate Site select and grouped asset list (no filtering)
-                    buildSiteAndAssetUI(data);
-                    setupSiteSelectScroll();
-
                     markersLayer.clearLayers();
                     const bounds = [];
 
@@ -456,8 +1130,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else showNotification('Asset not found on map','error');
             }
 
-            // Load map & markers + populate site/asset UI
-            loadStreetLightStatus(()=>{ if(selectedAssetNo){ setTimeout(()=>{ openLocationPopup(selectedAssetNo); }, 500); } });
+            // Load map & markers
+            loadStreetLightStatus(()=>{
+                if(selectedAssetNo) {
+                    setTimeout(()=>{ openLocationPopup(selectedAssetNo); }, 500);
+                }
+            });
 
             // Auto-update every 15s without resetting map center
             setInterval(()=>loadStreetLightStatus(), 15000);

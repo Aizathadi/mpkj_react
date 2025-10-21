@@ -229,4 +229,57 @@ class LightingSetupController extends Controller
             \Log::error("MQTT publish failed for asset {$assetNo}: " . $e->getMessage());
         }
     }
+
+   /** Get Lighting Schedule data by site */
+public function getScheduleBySite(Request $request)
+{
+    $site = $request->query('site');
+
+    // "All sites" = one schedule per site
+    if ($site === 'all') {
+        $sites = LightingSetup::select('site_name')
+            ->groupBy('site_name')
+            ->get();
+
+        $result = [];
+        foreach ($sites as $s) {
+            $setup = LightingSetup::where('site_name', $s->site_name)->first();
+            if ($setup) {
+                $result[] = $this->formatSchedule($setup);
+            }
+        }
+        return response()->json($result);
+    }
+
+    // Single site = only first schedule found
+    $setup = LightingSetup::where('site_name', $site)->first();
+    if (!$setup) return response()->json([]);
+
+    return response()->json([$this->formatSchedule($setup)]);
+}
+
+private function formatSchedule($s)
+{
+    $fmt = fn($h, $m) => sprintf('%02d:%02d', $h ?? 0, $m ?? 0);
+    return [
+        'site_name' => $s->site_name,
+        'on_time' => $fmt($s->on_time_h, $s->on_time_m),
+        'off_time' => $fmt($s->off_time_h, $s->off_time_m),
+        'dim1_start' => $fmt($s->dimming1_h, $s->dimming1_m),
+        'dim1_stop' => $fmt($s->dimming2_h, $s->dimming2_m),
+        'dim1_brightness' => $s->dimming1_value ?? '-',
+        'dim2_start' => $fmt($s->dimming2_h, $s->dimming2_m),
+        'dim2_stop' => $fmt($s->dimming3_h, $s->dimming3_m),
+        'dim2_brightness' => $s->dimming2_value ?? '-',
+        'dim3_start' => $fmt($s->dimming3_h, $s->dimming3_m),
+        'dim3_stop' => $fmt($s->dimming4_h, $s->dimming4_m),
+        'dim3_brightness' => $s->dimming3_value ?? '-',
+        'dim4_start' => $fmt($s->dimming4_h, $s->dimming4_m),
+        'dim4_stop' => $fmt($s->off_time_h, $s->off_time_m),
+        'dim4_brightness' => $s->dimming4_value ?? '-',
+    ];
+}
+
+
+
 }

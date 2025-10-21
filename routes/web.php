@@ -10,10 +10,6 @@ use App\Http\Controllers\AlarmController;
 use App\Http\Controllers\AlarmConfigurationController;
 use App\Http\Controllers\LightingSetupController;
 use App\Http\Controllers\TelegramController;
-use App\Http\Controllers\DashboardController;
-
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
 
 Route::get('/', function () {
     return view('welcome');
@@ -33,7 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     /**
-     * 🔹 Alarm Status
+     *  Alarm Status
      */
     Route::get('/alarms', [AlarmController::class, 'index'])->name('alarms.index');
     Route::get('/alarms/data', [AlarmController::class, 'data'])->name('alarms.data');
@@ -45,7 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/alarms/count', [AlarmController::class, 'count'])->name('alarms.count');
 
     /**
-     * 🔹 Alarm Configuration
+     *  Alarm Configuration
      */
     Route::get('/alarms/configuration', [AlarmConfigurationController::class, 'index'])
         ->name('alarm.configuration');
@@ -85,7 +81,7 @@ Route::middleware('auth')->group(function () {
     })->name('streetlight.status.data');
 
     /**
-     * 🔹 Lighting Setup
+     * Lighting Setup
      */
     Route::get('/lighting-setup', [LightingSetupController::class, 'index'])
     ->name('lighting.setup.index');
@@ -99,10 +95,21 @@ Route::middleware('auth')->group(function () {
 
     
     //Telegram
-   Route::get('/send-telegram-test', [TelegramController::class, 'sendTest']);
+    Route::get('/send-telegram-test', [TelegramController::class, 'sendTest']);
     Route::post('/alarms/{id}/report', [TelegramController::class, 'sendAlarmReport']);
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    //Command Centre
+     Route::get('/api/sites', [AssetRegistrationController::class, 'getSites']);
+     Route::get('/api/assets/{site}', [AssetRegistrationController::class, 'getAssetsBySite']);
+    
+     //Alarm & Schedule Command Central
+     Route::get('/alarms/popupAll', [AlarmController::class, 'popupAll'])->name('alarms.popupAll');
+     Route::get('/alarms/popupData', [AlarmController::class, 'popupData']);
+     Route::get('/api/scheduleBySite', [LightingSetupController::class, 'getScheduleBySite']);
+     
+     //Asset Command Central
+     Route::get('/statusData', [StreetLightStatusController::class, 'getStatusData']);
+ 
 });
 
 require __DIR__.'/auth.php';

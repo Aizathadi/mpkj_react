@@ -7,22 +7,20 @@ use Illuminate\Http\Request;
 
 class AssetRegistrationController extends Controller
 {
-    // Show all assets
+    //  Show all assets (grouped by site)
     public function index()
     {
-        // Group assets by site_name
-       $assetsBySite = AssetRegistration::all()->groupBy('site_name');
-
-    return view('assets.index', compact('assetsBySite'));
+        $assetsBySite = AssetRegistration::all()->groupBy('site_name');
+        return view('assets.index', compact('assetsBySite'));
     }
 
-    // Show form to create a new asset
+    //  Show form to create a new asset
     public function create()
     {
         return view('assets.create');
     }
 
-    // Store new asset
+    //  Store new asset
     public function store(Request $request)
     {
         $request->validate([
@@ -37,7 +35,7 @@ class AssetRegistrationController extends Controller
         return redirect()->route('assets.index')->with('success', 'Asset registered successfully!');
     }
 
-    // Show form to edit existing asset
+    //  Show form to edit existing asset
     public function edit($id)
     {
         $asset = AssetRegistration::findOrFail($id);
@@ -61,12 +59,26 @@ class AssetRegistrationController extends Controller
         return redirect()->route('assets.index')->with('success', 'Asset updated successfully!');
     }
 
-    // Delete asset
+    //  Delete asset
     public function destroy($id)
     {
         $asset = AssetRegistration::findOrFail($id);
         $asset->delete();
 
         return redirect()->route('assets.index')->with('success', 'Asset deleted successfully!');
+    }
+
+    //  API: Get unique site names (for dashboard dropdown)
+    public function getSites()
+    {
+        $sites = AssetRegistration::select('site_name')->distinct()->get();
+        return response()->json($sites);
+    }
+
+    //  API: Get all assets by site name (for map markers)
+    public function getAssetsBySite($site)
+    {
+        $assets = AssetRegistration::where('site_name', $site)->get();
+        return response()->json($assets);
     }
 }

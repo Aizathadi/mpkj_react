@@ -29,7 +29,7 @@ class MqttPublishController extends Controller
                 $onoff = isset($validated['onoff']) ? (int) $validated['onoff'] : 1;
                 $payload = [
                     "msgType" => "PropOpreation",
-                    "msgId"   => "12345678",
+                    "msgId"   => "ON/OFF",
                     "sn"      => $assetNo,
                     "op"      => "W",
                     "prop"    => [
@@ -45,7 +45,7 @@ class MqttPublishController extends Controller
                 $dimming = isset($validated['dimming']) ? (int) $validated['dimming'] : 0;
                 $payload = [
                     "msgType" => "PropOpreation",
-                    "msgId"   => "12345678",
+                    "msgId"   => "Brightness",
                     "sn"      => $assetNo,
                     "op"      => "W",
                     "prop"    => [

@@ -45,10 +45,11 @@
                                         $status = strtolower(trim($alarm->alarm_status));
                                         $color = match (true) {
                                             str_contains($status, 'overvoltage') => 'text-red-500 animate-pulse',
-                                            str_contains($status, 'undervoltage') => 'text-yellow-400 font-semibold',
-                                            str_contains($status, 'overcurrent') => 'text-orange-500 font-semibold',
-                                            str_contains($status, 'short') => 'text-pink-500 font-semibold',
-                                            str_contains($status, 'disconnected') => 'text-gray-400 font-bold',
+                                            str_contains($status, 'undervoltage') => 'text-red-500 animate-pulse',
+                                            str_contains($status, 'overcurrent') => 'text-red-500 animate-pulse',
+                                            str_contains($status, 'Undercurrent') => 'text-red-500 animate-pulse',
+                                            str_contains($status, 'LIGHTS ON ABNORMAL ALARM') =>'text-red-500 animate-pulse',
+                                            str_contains($status, 'LIGHTS OFF ABNORMAL ALARM') =>'text-red-500 animate-pulse',
                                             str_contains($status, 'active') => 'text-red-500 animate-pulse font-bold',
                                             str_contains($status, 'cleared') => 'text-green-400 font-bold',
                                             str_contains($status, 'warning') => 'text-yellow-400 font-bold',
