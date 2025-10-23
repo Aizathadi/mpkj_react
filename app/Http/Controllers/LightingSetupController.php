@@ -120,7 +120,7 @@ class LightingSetupController extends Controller
             $payload = [
                 "msgType" => "WorkPlan",
                 "msgId"   => uniqid('lux_'),
-                "sn"      => $asset->asset_no,   // ✅ Always asset_no
+                "sn"      => $asset->asset_no,
                 "op"      => "W",
                 "cmdData" => [
                     "type"  => 2,
@@ -139,13 +139,18 @@ class LightingSetupController extends Controller
         return redirect()->back()->with('success', 'Lux control sent to controllers.');
     }
 
-    /** Build MQTT payload for schedule & dimming */
+    /**  MQTT  */
     private function buildMqttPayload($validated, $assetNo)
     {
+        $tzOffset = 8;
+         $adjust = function ($hour) use ($tzOffset) {
+        return ($hour - $tzOffset + 24) % 24;  // elak negatif
+        };
+
         return [
             "msgType" => "WorkPlan",
             "msgId"   => uniqid('Work_Plan_'),
-            "sn"      => $assetNo,   // ✅ Using asset_no for device SN
+            "sn"      => $assetNo,
             "err"     => 0,
             "cmdData" => [
                 "type"  => 1,
@@ -156,12 +161,12 @@ class LightingSetupController extends Controller
                         "chnNoT" => 1,
                         "validT" => 1,
                         "schn"   => 1,
-                        "sH"     => intval($validated['on_time_h'] ?? 0),
+                        "sH"     => $adjust(intval($validated['on_time_h'] ?? 0)),
                         "sM"     => intval($validated['on_time_m'] ?? 0),
                         "sS"     => intval($validated['on_time_s'] ?? 0),
                         "sonoff" => 1,
                         "echn"   => 1,
-                        "eH"     => intval($validated['off_time_h'] ?? 0),
+                        "eH"     => $adjust(intval($validated['off_time_h'] ?? 0)),
                         "eM"     => intval($validated['off_time_m'] ?? 0),
                         "eS"     => intval($validated['off_time_s'] ?? 0),
                         "eonoff" => 0,
@@ -171,12 +176,12 @@ class LightingSetupController extends Controller
                         "chnNoT" => 2,
                         "validT" => 1,
                         "schn"   => 1,
-                        "sH"     => intval($validated['dimming1_h'] ?? 0),
+                        "sH"     => $adjust(intval($validated['dimming1_h'] ?? 0)),
                         "sM"     => intval($validated['dimming1_m'] ?? 0),
                         "sS"     => intval($validated['dimming1_s'] ?? 0),
                         "sbri"   => intval($validated['dimming1_value'] ?? 0),
                         "echn"   => 1,
-                        "eH"     => intval($validated['dimming2_h'] ?? 0),
+                        "eH"     => $adjust(intval($validated['dimming2_h'] ?? 0)),
                         "eM"     => intval($validated['dimming2_m'] ?? 0),
                         "eS"     => intval($validated['dimming2_s'] ?? 0),
                         "ebri"   => intval($validated['dimming2_value'] ?? 0),
@@ -186,12 +191,12 @@ class LightingSetupController extends Controller
                         "chnNoT" => 3,
                         "validT" => 1,
                         "schn"   => 1,
-                        "sH"     => intval($validated['dimming3_h'] ?? 0),
+                        "sH"     => $adjust(intval($validated['dimming3_h'] ?? 0)),
                         "sM"     => intval($validated['dimming3_m'] ?? 0),
                         "sS"     => intval($validated['dimming3_s'] ?? 0),
                         "sbri"   => intval($validated['dimming3_value'] ?? 0),
                         "echn"   => 1,
-                        "eH"     => intval($validated['dimming4_h'] ?? 0),
+                        "eH"     => $adjust(intval($validated['dimming4_h'] ?? 0)),
                         "eM"     => intval($validated['dimming4_m'] ?? 0),
                         "eS"     => intval($validated['dimming4_s'] ?? 0),
                         "ebri"   => intval($validated['dimming4_value'] ?? 0),
@@ -230,56 +235,53 @@ class LightingSetupController extends Controller
         }
     }
 
-   /** Get Lighting Schedule data by site */
-public function getScheduleBySite(Request $request)
-{
-    $site = $request->query('site');
+    /** Get Lighting Schedule data by site */
+    public function getScheduleBySite(Request $request)
+    {
+        $site = $request->query('site');
 
-    // "All sites" = one schedule per site
-    if ($site === 'all') {
-        $sites = LightingSetup::select('site_name')
-            ->groupBy('site_name')
-            ->get();
+        // "All sites" = one schedule per site
+        if ($site === 'all') {
+            $sites = LightingSetup::select('site_name')
+                ->groupBy('site_name')
+                ->get();
 
-        $result = [];
-        foreach ($sites as $s) {
-            $setup = LightingSetup::where('site_name', $s->site_name)->first();
-            if ($setup) {
-                $result[] = $this->formatSchedule($setup);
+            $result = [];
+            foreach ($sites as $s) {
+                $setup = LightingSetup::where('site_name', $s->site_name)->first();
+                if ($setup) {
+                    $result[] = $this->formatSchedule($setup);
+                }
             }
+            return response()->json($result);
         }
-        return response()->json($result);
+
+        // Single site = only first schedule found
+        $setup = LightingSetup::where('site_name', $site)->first();
+        if (!$setup) return response()->json([]);
+
+        return response()->json([$this->formatSchedule($setup)]);
     }
 
-    // Single site = only first schedule found
-    $setup = LightingSetup::where('site_name', $site)->first();
-    if (!$setup) return response()->json([]);
-
-    return response()->json([$this->formatSchedule($setup)]);
-}
-
-private function formatSchedule($s)
-{
-    $fmt = fn($h, $m) => sprintf('%02d:%02d', $h ?? 0, $m ?? 0);
-    return [
-        'site_name' => $s->site_name,
-        'on_time' => $fmt($s->on_time_h, $s->on_time_m),
-        'off_time' => $fmt($s->off_time_h, $s->off_time_m),
-        'dim1_start' => $fmt($s->dimming1_h, $s->dimming1_m),
-        'dim1_stop' => $fmt($s->dimming2_h, $s->dimming2_m),
-        'dim1_brightness' => $s->dimming1_value ?? '-',
-        'dim2_start' => $fmt($s->dimming2_h, $s->dimming2_m),
-        'dim2_stop' => $fmt($s->dimming3_h, $s->dimming3_m),
-        'dim2_brightness' => $s->dimming2_value ?? '-',
-        'dim3_start' => $fmt($s->dimming3_h, $s->dimming3_m),
-        'dim3_stop' => $fmt($s->dimming4_h, $s->dimming4_m),
-        'dim3_brightness' => $s->dimming3_value ?? '-',
-        'dim4_start' => $fmt($s->dimming4_h, $s->dimming4_m),
-        'dim4_stop' => $fmt($s->off_time_h, $s->off_time_m),
-        'dim4_brightness' => $s->dimming4_value ?? '-',
-    ];
-}
-
-
-
+    private function formatSchedule($s)
+    {
+        $fmt = fn($h, $m) => sprintf('%02d:%02d', $h ?? 0, $m ?? 0);
+        return [
+            'site_name' => $s->site_name,
+            'on_time' => $fmt($s->on_time_h, $s->on_time_m),
+            'off_time' => $fmt($s->off_time_h, $s->off_time_m),
+            'dim1_start' => $fmt($s->dimming1_h, $s->dimming1_m),
+            'dim1_stop' => $fmt($s->dimming2_h, $s->dimming2_m),
+            'dim1_brightness' => $s->dimming1_value ?? '-',
+            'dim2_start' => $fmt($s->dimming2_h, $s->dimming2_m),
+            'dim2_stop' => $fmt($s->dimming3_h, $s->dimming3_m),
+            'dim2_brightness' => $s->dimming2_value ?? '-',
+            'dim3_start' => $fmt($s->dimming3_h, $s->dimming3_m),
+            'dim3_stop' => $fmt($s->dimming4_h, $s->dimming4_m),
+            'dim3_brightness' => $s->dimming3_value ?? '-',
+            'dim4_start' => $fmt($s->dimming4_h, $s->dimming4_m),
+            'dim4_stop' => $fmt($s->off_time_h, $s->off_time_m),
+            'dim4_brightness' => $s->dimming4_value ?? '-',
+        ];
+    }
 }
